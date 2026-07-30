@@ -87,6 +87,11 @@ export default function SupportFundManager() {
       setIsScraping(false);
     }
   };
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchFunds(1, searchTitle);
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 relative">
       
