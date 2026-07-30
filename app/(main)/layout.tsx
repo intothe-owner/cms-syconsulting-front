@@ -18,13 +18,15 @@ export async function generateMetadata(): Promise<Metadata> {
   } catch (e) {}
   return { title: "기본 사이트명" };
 }
-
+export const dynamic = 'force-dynamic';
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   
   // 💡 1. 최고관리자 존재 여부 확인 (경로 검사 없이 무조건 체크)
   let hasAdmin = true;
   try {
-    const adminCheckRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/check-admin`, { cache: "no-store" });
+    const adminCheckRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/check-admin`, { 
+      cache: "no-store" 
+    });
     const adminCheckJson = await adminCheckRes.json();
     if (adminCheckJson.success) {
       hasAdmin = adminCheckJson.hasAdmin;
