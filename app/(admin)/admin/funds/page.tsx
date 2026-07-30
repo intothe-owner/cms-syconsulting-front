@@ -71,26 +71,22 @@ export default function SupportFundManager() {
       setIsScraping(false);
     }
   };
+  // 소상공인24 크롤링 호출
   const handleScrapeSbiz24 = async () => {
-    if (!confirm("K-Startup 진행중인 공고를 추가로 가져오시겠습니까?")) return;
+    if (!confirm("소상공인24 정책자금 공고를 추가로 가져오시겠습니까?\n(가상 브라우저를 구동하여 수집하므로 시간이 조금 더 소요될 수 있습니다.)")) return;
     
     setIsScraping(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/funds/scrape/k-startup`, { method: "POST" });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/funds/scrape/sbiz24`, { method: "POST" });
       const json = await res.json();
       alert(json.message);
       fetchFunds(1);
     } catch (e) {
-      alert("K-Startup 데이터 수집 중 오류가 발생했습니다.");
+      alert("소상공인24 데이터 수집 중 오류가 발생했습니다.");
     } finally {
       setIsScraping(false);
     }
   };
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    fetchFunds(1, searchTitle);
-  };
-
   return (
     <div className="max-w-6xl mx-auto space-y-6 relative">
       
