@@ -42,19 +42,43 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   // --- 3. 이후 기존 데이터 페칭 로직 정상 실행 ---
-  const [settingsRes, menusRes, memberSettingsRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/settings`, { cache: "no-store" }),
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/menus`, { cache: "no-store" }),
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/member-settings`, { cache: "no-store" }),
-  ]);
+  let settings = null;
+  let flatMenus = [];
+  let memberSettings = null;
 
-  const settingsJson = await settingsRes.json();
-  const menusJson = await menusRes.json();
-  const memberSettingsJson = await memberSettingsRes.json();
+  try {
+    const [settingsRes, menusRes, memberSettingsRes] = await Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/settings`, { cache: "no-store" }),
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/menus`, { cache: "no-store" }),
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/member-settings`, { cache: "no-store" }),
+    ]);
 
-  const settings = settingsJson.success ? settingsJson.data : null;
-  const flatMenus = menusJson.success ? menusJson.data : [];
-  const memberSettings = memberSettingsJson.success ? memberSettingsJson.data : null;
+    // 각 응답이 정상(200번대)일 때만 JSON 변환 시도
+    if (settingsRes.ok) {
+      const settingsJson = await settingsRes.json();
+      settings = settingsJson.success ? settingsJson.data : null;
+    } else {
+      console.error("settings API 에러:", settingsRes.status);
+    }
+
+    if (menusRes.ok) {
+      const menusJson = await menusRes.json();
+      flatMenus = menusJson.success ? menusJson.data : [];
+    } else {
+      console.error("menus API 에러:", menusRes.status);
+    }
+
+    if (memberSettingsRes.ok) {
+      const memberSettingsJson = await memberSettingsRes.json();
+      memberSettings = memberSettingsJson.success ? memberSettingsJson.data : null;
+    } else {
+      console.error("memberSettings API 에러:", memberSettingsRes.status);
+    }
+
+  } catch (error) {
+    // API 주소가 틀렸거나 백엔드 서버가 죽어있을 때 여기서 잡힘
+    console.error("메인 레이아웃 데이터 페칭 완전 실패:", error);
+  }
 
   const buildMenuTree = (flat: any[]) => {
     const map: Record<number, any> = {};
