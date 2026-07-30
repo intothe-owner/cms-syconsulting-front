@@ -71,7 +71,21 @@ export default function SupportFundManager() {
       setIsScraping(false);
     }
   };
-
+  const handleScrapeSbiz24 = async () => {
+    if (!confirm("K-Startup 진행중인 공고를 추가로 가져오시겠습니까?")) return;
+    
+    setIsScraping(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/funds/scrape/k-startup`, { method: "POST" });
+      const json = await res.json();
+      alert(json.message);
+      fetchFunds(1);
+    } catch (e) {
+      alert("K-Startup 데이터 수집 중 오류가 발생했습니다.");
+    } finally {
+      setIsScraping(false);
+    }
+  };
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchFunds(1, searchTitle);
@@ -111,6 +125,13 @@ export default function SupportFundManager() {
             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 text-sm hover:bg-blue-700 transition"
           >
             <DownloadCloud size={16}/> K-Startup 동기화
+          </button>
+          <button 
+            onClick={handleScrapeSbiz24}
+            disabled={isScraping}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 text-sm hover:bg-blue-500 transition"
+          >
+            <DownloadCloud size={16}/> 소상공인 동기화
           </button>
         </div>
       </div>

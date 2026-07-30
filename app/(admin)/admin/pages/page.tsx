@@ -222,7 +222,7 @@ export default function VisualPageBuilder() {
                 if (aiTarget.type === 'META') {
                     const textEl = json.elements.find((el: any) => el.type === 'TEXT');
                     const imgEl = json.elements.find((el: any) => el.type === 'IMAGE');
-                    
+
                     // HTML 태그 제거 및 데이터 반영
                     const newTitle = textEl ? textEl.content.replace(/<[^>]*>?/gm, '') : pageMeta.bgTitle;
                     const newBg = imgEl ? imgEl.content : pageMeta.bgImage;
@@ -245,8 +245,8 @@ export default function VisualPageBuilder() {
                         columns: [{ id: Math.random().toString(36).substr(2, 9), width: "1/1", elements: newElements }]
                     };
                     setContainers([...containers, newContainer]);
-                } 
-                
+                }
+
                 // 2) 특정 엘리먼트 텍스트 혹은 이미지 변경
                 else if (aiTarget.type === 'TEXT' || aiTarget.type === 'IMAGE') {
                     const newContent = json.elements[0]?.content;
@@ -255,14 +255,14 @@ export default function VisualPageBuilder() {
                             ...container,
                             columns: container.columns.map(col => ({
                                 ...col,
-                                elements: col.elements.map(el => 
+                                elements: col.elements.map(el =>
                                     el.id === aiTarget.id ? { ...el, content: newContent } : el
                                 )
                             }))
                         })));
                     }
-                } 
-                
+                }
+
                 // 3) 특정 컨테이너를 통째로 리빌드
                 else if (aiTarget.type === 'CONTAINER') {
                     const newElements: ElementNode[] = json.elements.map((el: any) => ({
@@ -274,7 +274,7 @@ export default function VisualPageBuilder() {
                             layerAlign: "flex-start", width: "auto", height: "auto"
                         } : undefined
                     }));
-                    setContainers(containers.map(container => 
+                    setContainers(containers.map(container =>
                         container.id === aiTarget.id ? {
                             ...container,
                             columns: [{ id: Math.random().toString(36).substr(2, 9), width: "1/1", elements: newElements }]
@@ -482,12 +482,12 @@ export default function VisualPageBuilder() {
         <div className="max-w-6xl mx-auto pb-20 h-screen" onClick={handleBoardClick} onMouseUp={() => setIsDraggingCell(false)}>
 
             <PageSettings
-    selectedMenuId={selectedMenuId}
-    setSelectedMenuId={setSelectedMenuId}
-    menus={menus} title={title} setTitle={setTitle} handleSave={handleSave}
-    pageMeta={pageMeta} setPageMeta={setPageMeta} setMetaBgFile={setMetaBgFile}
-    setAiModalOpen={(type, id, content) => openAiModal(type as any, id, content)}
-/>
+                selectedMenuId={selectedMenuId}
+                setSelectedMenuId={setSelectedMenuId}
+                menus={menus} title={title} setTitle={setTitle} handleSave={handleSave}
+                pageMeta={pageMeta} setPageMeta={setPageMeta} setMetaBgFile={setMetaBgFile}
+                setAiModalOpen={(type, id, content) => openAiModal(type as any, id, content)}
+            />
 
             <SlideManager
                 sliderType={sliderType} setSliderType={setSliderType} slides={slides} setSlides={setSlides}
@@ -520,7 +520,7 @@ export default function VisualPageBuilder() {
                 getCommonBorderColor={getCommonBorderColor}
                 applyToTableCells={applyToTableCells}
                 savedRangeRef={savedRangeRef}
-                
+
                 // 💡 [추가] 자식 컴포넌트로 전달
                 setAiModalOpen={(type, id, content) => openAiModal(type as any, id, content)}
             />
@@ -540,15 +540,15 @@ export default function VisualPageBuilder() {
                         <div className="flex items-center gap-2 mb-2">
                             <Sparkles className="text-purple-600" size={24} />
                             <h2 className="text-xl font-bold text-slate-800">
-    {aiTarget.type === 'PAGE' ? '제미나이 AI - 새 블록 생성' : 
-     aiTarget.type === 'CONTAINER' ? '제미나이 AI - 컨테이너 수정' : 
-     aiTarget.type === 'IMAGE' ? '제미나이 AI - 이미지 다시 그리기' : 
-     aiTarget.type === 'META' ? '제미나이 AI - 페이지 상단 배경 및 제목 생성' : '제미나이 AI - 텍스트 수정'}
-</h2>
+                                {aiTarget.type === 'PAGE' ? '제미나이 AI - 새 블록 생성' :
+                                    aiTarget.type === 'CONTAINER' ? '제미나이 AI - 컨테이너 수정' :
+                                        aiTarget.type === 'IMAGE' ? '제미나이 AI - 이미지 다시 그리기' :
+                                            aiTarget.type === 'META' ? '제미나이 AI - 페이지 상단 배경 및 제목 생성' : '제미나이 AI - 텍스트 수정'}
+                            </h2>
                         </div>
                         <p className="text-sm text-slate-500 mb-5">
-                            {aiTarget.type === 'PAGE' || aiTarget.type === 'CONTAINER' 
-                                ? '생성하고 싶은 UI 레이아웃, 텍스트 내용을 상세히 적어주시면 AI가 HTML 코드를 짜서 수정/추가합니다.' 
+                            {aiTarget.type === 'PAGE' || aiTarget.type === 'CONTAINER'
+                                ? '생성하고 싶은 UI 레이아웃, 텍스트 내용을 상세히 적어주시면 AI가 HTML 코드를 짜서 수정/추가합니다.'
                                 : '요구사항을 적어주시면 선택한 내용을 알맞게 변경해 드립니다.'}
                         </p>
 
