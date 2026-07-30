@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DownloadCloud, ExternalLink, Loader2, Search } from "lucide-react";
+import { DownloadCloud, ExternalLink, Loader2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function SupportFundManager() {
   const [funds, setFunds] = useState<any[]>([]);
@@ -71,6 +71,7 @@ export default function SupportFundManager() {
       setIsScraping(false);
     }
   };
+  
   // 소상공인24 크롤링 호출
   const handleScrapeSbiz24 = async () => {
     if (!confirm("소상공인24 정책자금 공고를 추가로 가져오시겠습니까?\n(가상 브라우저를 구동하여 수집하므로 시간이 조금 더 소요될 수 있습니다.)")) return;
@@ -87,10 +88,22 @@ export default function SupportFundManager() {
       setIsScraping(false);
     }
   };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchFunds(1, searchTitle);
   };
+
+  // --- 페이지네이션 계산 로직 ---
+  const PAGE_GROUP_SIZE = 10;
+  const currentGroup = Math.ceil(page / PAGE_GROUP_SIZE);
+  const startPage = (currentGroup - 1) * PAGE_GROUP_SIZE + 1;
+  const endPage = Math.min(currentGroup * PAGE_GROUP_SIZE, totalPages);
+  
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 relative">
@@ -203,20 +216,51 @@ export default function SupportFundManager() {
           </tbody>
         </table>
 
-        {/* 페이지네이션 */}
+        {/* --- 그룹화된 페이지네이션 --- */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-slate-100 flex justify-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+          <div className="p-4 border-t border-slate-100 flex justify-center items-center gap-2">
+            {/* 이전 그룹으로 이동 버튼 */}
+            <button
+              onClick={() => fetchFunds(startPage - 1, searchTitle)}
+              disabled={startPage === 1}
+              className={`p-2 rounded-lg flex items-center justify-center transition-colors ${
+                startPage === 1 
+                  ? 'text-slate-300 cursor-not-allowed' 
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+              title="이전 10페이지"
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            {/* 페이지 번호 목록 */}
+            {pages.map(p => (
               <button
                 key={p}
                 onClick={() => fetchFunds(p, searchTitle)}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${
-                  p === page ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${
+                  p === page 
+                    ? 'bg-indigo-600 text-white' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
                 {p}
               </button>
             ))}
+
+            {/* 다음 그룹으로 이동 버튼 */}
+            <button
+              onClick={() => fetchFunds(endPage + 1, searchTitle)}
+              disabled={endPage === totalPages}
+              className={`p-2 rounded-lg flex items-center justify-center transition-colors ${
+                endPage === totalPages 
+                  ? 'text-slate-300 cursor-not-allowed' 
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+              title="다음 10페이지"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
         )}
       </div>
